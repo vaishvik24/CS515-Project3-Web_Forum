@@ -1,84 +1,87 @@
-from datetime import datetime
+import http
 import secrets
+from datetime import datetime
 from threading import Lock
-from flask import Flask, jsonify, request
 import uuid
-
+from flask import Flask, jsonify, request
+from http import HTTPStatus
 app = Flask(__name__)
-lock = Lock()
+lock_request = Lock()
 
 posts = {}
+n_bytes = 16
 
 
 def generate_secured_key():
     """Generate a random, unique key for a post"""
     keys = [posts[p]['key'] for p in posts]
-    while True:
-        key = secrets.token_hex(16)
+    while 1 == 1:
+        key = secrets.token_hex(n_bytes)
         if key not in keys:
             return key
 
 
 def create_post(msg):
     """Create a new post with the given message"""
-    with lock:
-        post_id = len(posts) + 1000
+    with lock_request:
+        curr_post_id = len(posts) + 1000
         timestamp = datetime.utcnow().isoformat()
-        post = {
-            'id': post_id,
+        curr_post = {
+            'id': curr_post_id,
             'key': generate_secured_key(),
             'timestamp': timestamp,
             'msg': msg
         }
-        posts[post_id] = post
-        return post
+        posts[curr_post_id] = curr_post
+        return curr_post
 
 
 def get_post_by_key(key):
     """Get the post with the given key"""
-    with lock:
+    with lock_request:
         for k, v in posts:
             if v['key'] == key:
                 post = posts[v['id']]
-                return jsonify({'id': post['id'], 'timestamp': post['timestamp'], 'msg': post['msg']}), 200
+                return jsonify({'id': post['id'], 'timestamp': post['timestamp'], 'msg': post['msg']}), HTTPStatus.OK.value
 
 
 def get_post(post_id):
     """Get the post with the given ID"""
-    with lock:
+    with lock_request:
         if post_id not in posts:
-            error = {'err': 'Post not found'}
-            return jsonify(error), 404
+            error = {'err': f'The post is not found with id: {post_id}'}
+            return jsonify(error), HTTPStatus.NOT_FOUND.value
         else:
             post = posts[post_id]
-            return jsonify({'id': post['id'], 'timestamp': post['timestamp'], 'msg': post['msg']}), 200
+            post_response = {'id': post['id'], 'timestamp': post['timestamp'], 'msg': post['msg']}
+            return jsonify(post_response), HTTPStatus.OK.value
 
 
 def delete_post(post_id, key):
     """Delete the post with the given ID and key"""
-    with lock:
+    with lock_request:
         if post_id not in posts:
-            error = {'err': 'Post not found'}
-            return jsonify(error), 404
+            error = {'err': f'The post is not found with id: {post_id}'}
+            return jsonify(error), HTTPStatus.NOT_FOUND.value
         else:
             post = posts[post_id]
             if key != post['key']:
-                error = {'err': 'Forbidden'}
-                return jsonify(error), 403
+                error = {'err': f'The request has been forbidden for key: {key}'}
+                return jsonify(error), HTTPStatus.FORBIDDEN.value
             else:
                 curr_post = posts[post_id]
                 del posts[post_id]
-                return jsonify(curr_post), 200
+                return jsonify(curr_post), HTTPStatus.OK.value
 
 
 @app.route('/', methods=['GET'])
 def server_test():
-    return 'Server is up and running on localhost:5000', 200
+    return 'Server is up and running on localhost:5000', HTTPStatus.OK.value
 
 
 @app.route('/all-posts', methods=['GET'])
 def get_all_posts():
-    return posts, 200
+    return posts, HTTPStatus.OK.value
 
 
 @app.route('/post', methods=['POST'])
@@ -88,9 +91,9 @@ def handle_create_post():
         msg = request.json.get('msg')
         if msg is not None:
             post = create_post(msg)
-            return jsonify(post), 200
+            return jsonify(post), HTTPStatus.OK.value
     error = {'err': 'Bad request'}
-    return jsonify(error), 400
+    return jsonify(error), HTTPStatus.BAD_REQUEST.value
 
 
 @app.route('/post/<int:post_id>', methods=['GET'])

@@ -1,0 +1,2 @@
+- do we need to write our own testcases in json files -> in order to get GRADES? (M Greenberg)
+- choose 5 extensions (2/2/1)
