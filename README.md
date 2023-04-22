@@ -44,12 +44,16 @@ Each extension is described as below:
 
 - Install python 3 in your machine
 - Read README.md file to get more context of the project
+- The code is written in `app.py` file.
 - The server is based on `flask` framework. First of all, you need to install flaks and other dependencies.
+- Postman’s GUI is great for interactive testing; you can also use it to export a file for command-line testing, which will be necessary for us to evaluate your code. You can install the command-line tester by running npm install -g newman; if you’re missing the npm command, you need to install node and npmLinks to an external site. The nvmLinks to an external site and is a popular way to do that. 
+  1. `setup.sh` shell script which downloads all dependencies
+  2. `run.sh` shell script that starts flaks server at port 5000 (http://127.0.01:5000/ to check whether its running or not)
+  3. `test.sh` shell script runs all tests (Make sure `npm` is installed as it uses `newman`)
 
-
-
-- TODO
-   ```shell
-   $ 
+```shell
+  $ ./setup.sh
+  $ ./run.sh
+  $ ./test.sh
    ```
 
