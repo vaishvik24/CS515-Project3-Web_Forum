@@ -5,11 +5,13 @@ from threading import Lock
 import uuid
 from flask import Flask, jsonify, request
 from http import HTTPStatus
+
 app = Flask(__name__)
 lock_request = Lock()
 
 posts = {}
 n_bytes = 16
+users = {}
 
 
 def generate_secured_key():
@@ -42,7 +44,8 @@ def get_post_by_key(key):
         for k, v in posts:
             if v['key'] == key:
                 post = posts[v['id']]
-                return jsonify({'id': post['id'], 'timestamp': post['timestamp'], 'msg': post['msg']}), HTTPStatus.OK.value
+                return jsonify(
+                    {'id': post['id'], 'timestamp': post['timestamp'], 'msg': post['msg']}), HTTPStatus.OK.value
 
 
 def get_post(post_id):
@@ -106,3 +109,50 @@ def handle_get_post(post_id):
 def handle_delete_post(post_id, key):
     """Handle a DELETE request to delete a post by ID and key"""
     return delete_post(post_id, key)
+
+
+@app.route('/user', methods=['POST'])
+def handle_add_user():
+    """
+    Create user API end point
+    :return: creates user with input body info
+    """
+    pass
+
+
+@app.route('/user/<string:user_id>', methods=['PUT'])
+def handle_update_user():
+    """
+    Updates user API end point
+    :return: updates metadata of the given user
+    """
+    pass
+
+
+@app.route('/user/<string:user_id>/keys', methods=['PUT'])
+def handle_update_user():
+    """
+    Creates new user_key API end point
+    :return: return newly created user_key for a user
+    """
+    pass
+
+
+@app.route('/user/<string:user_id>', methods=['GET'])
+def handle_get_user():
+    """
+    Get user API end point
+    :return: returns user for given query param user_id
+    """
+    pass
+
+
+@app.route('/post/<int:post_id>/user/<string:user_id>', methods=['GET'])
+def handle_user_posts():
+    """
+    Get user posts by the given user id
+    metadata: unique user_id, name, phone_num, city
+    user object: user_id, name, phone_num, city, created_at, user_keys
+    :return: returns posts that posted by the user
+    """
+    pass
