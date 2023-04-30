@@ -39,7 +39,7 @@ We've implemented 5 extensions.
 Postman collection Link: https://api.postman.com/collections/3753695-16d75404-5cc2-43f1-b13f-cbdd160c4fb0?access_key=PMAT-01GZA2XQG0D8N98N798EKCT46X
 
 Each extension is described as below:
-### 1. User Profiles (CURD operations)
+## 1. User Profiles (CURD operations)
 - The service has several end points of create a user, get a user, and update a user.
 - Each user entity consists of attributes as below:
   1. user_id: unique identifier to identify a user. This is unique per user and which can be changed or updated later. There are some constrains for username like it should have atleast a char, a number, does not contain a space and special characters etc. 
@@ -126,7 +126,7 @@ Each extension is described as below:
 <img src="screenshots/extension2_6.png">
 
 
-### 2. User and User keys
+## 2. User and User keys
 - The conventional flow has a concept of simple posts. But, in order to delete and do more operation per post in future. So, remember key for each post is not a good way for system. So, posts created by a single user can be managed by a user using its private key. This would be given to user while creating of the user.  
 - While creating a post, user id and user key has to be passed. If the user id does not match with user key then it would raise 403 forbidden error. If matched, then it creates a post with user id which can be used later. Even, this user key can be used to delete post as well. Instead of post key, a user key can be used as well.
 
@@ -166,7 +166,7 @@ Each extension is described as below:
     - <img src="screenshots/extension1_2.png">
 
      
-### 3. User based range queries
+## 3. User based range queries
 - The concept of user is a much useful to manage posts. This is the filter request which filters out the posts based by the user_id. 
 - If the user does not exist then it throws 404 not found error. If found, then it returns list of posts for the given user.
 
@@ -185,8 +185,8 @@ Each extension is described as below:
   <img src="screenshots/extension3_3.png">
 
 
-### 4. Time-based range queries 
-### 5. Full text search
+## 4. Time-based range queries 
+## 5. Full text search
 
 ## 🏃‍Run Guide
 
