@@ -39,12 +39,7 @@ We've implemented 5 extensions.
 Postman collection Link: https://api.postman.com/collections/3753695-16d75404-5cc2-43f1-b13f-cbdd160c4fb0?access_key=PMAT-01GZA2XQG0D8N98N798EKCT46X
 
 Each extension is described as below:
-### 1. User and User keys
-- The conventional flow has a concept of simple posts. But, in order to delete and do more operation per post in future. So, remember key for each post is not a good way for system. So, posts created by a single user can be managed by a user using its private key. This would be given to user while creating of the user (APIs are in extension 2). 
-- While creating a post, user id and user key has to be passed. If the user id does not match with user key then it would raise 403 forbidden error. If matched, then it creates a post with user id which can be used later. Even, this user key can be used to delete post as well. Instead of post key, a user key can be used as well.
-
-
-### 2. User Profiles (CURD operations)
+### 1. User Profiles (CURD operations)
 - The service has several end points of create a user, get a user, and update a user.
 - Each user entity consists of attributes as below:
   1. user_id: unique identifier to identify a user. This is unique per user and which can be changed or updated later. There are some constrains for username like it should have atleast a char, a number, does not contain a space and special characters etc. 
@@ -53,11 +48,130 @@ Each extension is described as below:
   4. name: full name of the user
   5. city: the location of a user
 
+- Examples:  
 
+1. Create a user
+     ```http
+     POST /user
+     ```
+  
+    - Request body: 
+    ```javascript
+    {    
+    "user_id": "vaishvik24",
+    "name": "john richards",
+    "phone_num" :"+1(606)-435-33322",
+    "city": "hoboken, NJ"
+    }
+    ```
+   - Response body: It adds a user with new id and generates unique key which can be used to access posts by the user.
+    ```javascript
+    {    
+    "city": "hoboken, NJ",
+    "created_at": "2023-04-30T23:11:25.873122",
+    "key": "dc878f6938680f1046957ff602137580",
+    "name": "john richards",
+    "phone_num": "+1(606)-435-33322",
+    "user_id": "vaishvik24"
+    }
+    ```
+   - Refer screenshots for example:
+![MAP](./screenshots/extension2_1.png)
+    - If the same user id is used for second user then it fails with error bad request.
+![MAP](./screenshots/extension2_2.png)
+2. Get a user
+     ```http
+     GET /user/{{user_id}}
+     ```
+    - Input is user_id which is the id of the user whose data needed to search.
+![MAP](./screenshots/extension2_3.png)
+    - It you pass invalid user_id then it throws 404 not found error.
+![MAP](./screenshots/extension2_4.png)
+
+
+3. Update a user
+   - This updates the data of the current user.
+   ```http
+     PUT /user/{{user_id}]
+    ```
+   - Input is user_id which is the id of the user whose data needed to search.
+   - Request body: 
+   ```javascript
+   {    
+   "name": "john richards",
+   "phone_num" :"+1(606)-435-11111",
+   "city": "California, CA"
+   }
+   ```
+   - Response body: It updates the user with the given id.
+   ```javascript
+   {    
+   "city": "California, CA",
+   "created_at": "2023-04-30T23:11:25.873122",
+   "name": "john richards",
+   "phone_num": "+1(606)-435-11111",
+   "user_id": "vaishvik24"
+   }
+   ```
+    -  Refer below screen shots for reference: 
+  ![MAP](./screenshots/extension2_5.png)
+    - It you pass invalid user_id then it throws 404 not found error.
+  ![MAP](./screenshots/extension2_6.png)
+
+
+### 2. User and User keys
+- The conventional flow has a concept of simple posts. But, in order to delete and do more operation per post in future. So, remember key for each post is not a good way for system. So, posts created by a single user can be managed by a user using its private key. This would be given to user while creating of the user.  
+- While creating a post, user id and user key has to be passed. If the user id does not match with user key then it would raise 403 forbidden error. If matched, then it creates a post with user id which can be used later. Even, this user key can be used to delete post as well. Instead of post key, a user key can be used as well.
+
+- Examples:
+
+1. Create a post by passing user id and user key. So, a post can be deleted with either post key and the user key.
+   - Consider the base_url: http://127.0.0.1:5000/
+   - Create Post for a user: 
+     ```http
+     GET /post
+     ```
+  
+    - Request body: it includes a json object having message, id and key of the user.
+    ```javascript
+    {    
+      "msg": "my name is vaishvik",
+       "user_id": "vaishvik123",
+       "user_key": "1a57d42eb71f5d000fca8c8ee14a70a5"
+    }
+    ```
+    - It adds new paramter to the post that is used_id which shows that the post is associated with the user.
+    - Once, you hit request, and it matches requirements then it create a post and return a response as below:  
+    ```javascript
+    {    
+      "id": 1002,
+      "key": "e63ad9abddfce35e53b57b5b72a2f699",
+      "msg": "my name is vaishvik",
+      "timestamp": "2023-04-30T21:57:54.653017",
+      "user_id": "vaishvik123"
+    }
+    ```
+   ![MAP](./screenshots/extension1_1.png)
+    - As we know that a user `vaishvik123` with key  `1a57d42eb71f5d000fca8c8ee14a70a5`. 
+    - If you want to delete this post `1002` then use user_key instead post_key to delete the post. 
+   
+2. If you pass, in correct user key in input body then it fails with 403 forbidden exception. 
+    ![MAP](./screenshots/extension1_2.png)
+     
 ### 3. User based range queries
 - The concept of user is a much useful to manage posts. This is the filter request which filters out the posts based by the user_id. 
-- If the user does not exists then it throws 404 not found error. If found, then it returns list of posts for the given user.
+- If the user does not exist then it throws 404 not found error. If found, then it returns list of posts for the given user.
 
+- Examples: 
+     ```http
+     GET /post/user/{{user_id}}
+     ```
+    - It returns list of posts created by a user with user_id.
+    ![MAP](./screenshots/extension3_1.png)
+    - If the user does not have posted anything then returns empty list.
+    ![MAP](./screenshots/extension3_2.png)
+    - If the user does not exist, then it throws 404 not found exception.
+    ![MAP](./screenshots/extension3_3.png)
 ### 4. 
 ### 5.
 
