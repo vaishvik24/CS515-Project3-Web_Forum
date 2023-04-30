@@ -1,2 +1,6 @@
 - do we need to write our own testcases in json files -> in order to get GRADES? (M Greenberg)
-- choose 5 extensions (2/2/1)
+
+
+Vaishvik: TOODs
+- remove multiple private key concept -> make it one -> replace/generate new option should be added
+- create post with userid and key both
