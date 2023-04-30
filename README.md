@@ -6,6 +6,10 @@
 
 # CS 515: Project 3 - Web Forum in FLASK 🎮 
 
+<style>
+
+</style>
+
 ##  ⏰ Estimated hours: 42 hours
 
 | Hours |                 Work                  |
@@ -76,17 +80,18 @@ Each extension is described as below:
     }
     ```
    - Refer screenshots for example:
-![MAP](./screenshots/extension2_1.png)
+   <img src="screenshots/extension2_1.png" alt="your-image-description" style="border: 2px solid  black;">
     - If the same user id is used for second user then it fails with error bad request.
-![MAP](./screenshots/extension2_2.png)
+   <img src="screenshots/extension2_2.png" alt="your-image-description" style="border: 2px solid  black;">
+
 2. Get a user
      ```http
      GET /user/{{user_id}}
      ```
     - Input is user_id which is the id of the user whose data needed to search.
-![MAP](./screenshots/extension2_3.png)
+<img src="screenshots/extension2_3.png" alt="your-image-description" style="border: 2px solid  black;">
     - It you pass invalid user_id then it throws 404 not found error.
-![MAP](./screenshots/extension2_4.png)
+<img src="screenshots/extension2_4.png" alt="your-image-description" style="border: 2px solid  black;">
 
 
 3. Update a user
@@ -113,10 +118,11 @@ Each extension is described as below:
    "user_id": "vaishvik24"
    }
    ```
-    -  Refer below screen shots for reference: 
-  ![MAP](./screenshots/extension2_5.png)
+    -  Refer below screen shots for reference:
+<img src="screenshots/extension2_5.png" alt="your-image-description" style="border: 2px solid  black;">
+
     - It you pass invalid user_id then it throws 404 not found error.
-  ![MAP](./screenshots/extension2_6.png)
+<img src="screenshots/extension2_6.png" alt="your-image-description" style="border: 2px solid  black;">
 
 
 ### 2. User and User keys
@@ -151,12 +157,13 @@ Each extension is described as below:
       "user_id": "vaishvik123"
     }
     ```
-   ![MAP](./screenshots/extension1_1.png)
+    <img src="screenshots/extension1_1.png" alt="your-image-description" style="border: 2px solid  black;">
     - As we know that a user `vaishvik123` with key  `1a57d42eb71f5d000fca8c8ee14a70a5`. 
     - If you want to delete this post `1002` then use user_key instead post_key to delete the post. 
    
-2. If you pass, in correct user key in input body then it fails with 403 forbidden exception. 
-    ![MAP](./screenshots/extension1_2.png)
+2. If you pass, in correct user key in input body then it fails with 403 forbidden exception.
+<img src="screenshots/extension1_2.png" alt="your-image-description" style="border: 2px solid  black;">
+
      
 ### 3. User based range queries
 - The concept of user is a much useful to manage posts. This is the filter request which filters out the posts based by the user_id. 
@@ -167,13 +174,15 @@ Each extension is described as below:
      GET /post/user/{{user_id}}
      ```
     - It returns list of posts created by a user with user_id.
-    ![MAP](./screenshots/extension3_1.png)
+  <img src="screenshots/extension3_1.png" alt="your-image-description" style="border: 2px solid  black;">
     - If the user does not have posted anything then returns empty list.
-    ![MAP](./screenshots/extension3_2.png)
+  <img src="screenshots/extension3_2.png" alt="your-image-description" style="border: 2px solid  black;">
     - If the user does not exist, then it throws 404 not found exception.
-    ![MAP](./screenshots/extension3_3.png)
-### 4. 
-### 5.
+  <img src="screenshots/extension3_3.png" alt="your-image-description" style="border: 2px solid  black;">
+
+
+### 4. Time-based range queries 
+### 5. Full text search
 
 ## 🏃‍Run Guide
 
