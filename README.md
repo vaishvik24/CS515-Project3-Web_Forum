@@ -6,10 +6,6 @@
 
 # CS 515: Project 3 - Web Forum in FLASK 🎮 
 
-<style>
-
-</style>
-
 ##  ⏰ Estimated hours: 42 hours
 
 | Hours |                 Work                  |
@@ -80,18 +76,18 @@ Each extension is described as below:
     }
     ```
    - Refer screenshots for example:
-   <img src="screenshots/extension2_1.png" alt="your-image-description" style="border: 2px solid  black;">
+   <img src="screenshots/extension2_1.png" alt="your-image-description" style="border: 2px solid  grey;">
     - If the same user id is used for second user then it fails with error bad request.
-   <img src="screenshots/extension2_2.png" alt="your-image-description" style="border: 2px solid  black;">
+   <img src="screenshots/extension2_2.png" alt="your-image-description" style="border: 2px solid  grey;">
 
 2. Get a user
      ```http
      GET /user/{{user_id}}
      ```
     - Input is user_id which is the id of the user whose data needed to search.
-<img src="screenshots/extension2_3.png" alt="your-image-description" style="border: 2px solid  black;">
+<img src="screenshots/extension2_3.png" alt="your-image-description" style="border: 2px solid  grey;">
     - It you pass invalid user_id then it throws 404 not found error.
-<img src="screenshots/extension2_4.png" alt="your-image-description" style="border: 2px solid  black;">
+<img src="screenshots/extension2_4.png" alt="your-image-description" style="border: 2px solid  grey;">
 
 
 3. Update a user
@@ -119,10 +115,10 @@ Each extension is described as below:
    }
    ```
     -  Refer below screen shots for reference:
-<img src="screenshots/extension2_5.png" alt="your-image-description" style="border: 2px solid  black;">
+<img src="screenshots/extension2_5.png" alt="your-image-description" style="border: 2px solid  grey;">
 
     - It you pass invalid user_id then it throws 404 not found error.
-<img src="screenshots/extension2_6.png" alt="your-image-description" style="border: 2px solid  black;">
+<img src="screenshots/extension2_6.png" alt="your-image-description" style="border: 2px solid  grey;">
 
 
 ### 2. User and User keys
@@ -157,12 +153,12 @@ Each extension is described as below:
       "user_id": "vaishvik123"
     }
     ```
-    <img src="screenshots/extension1_1.png" alt="your-image-description" style="border: 2px solid  black;">
+    <img src="screenshots/extension1_1.png" alt="your-image-description" style="border: 2px solid  grey;">
     - As we know that a user `vaishvik123` with key  `1a57d42eb71f5d000fca8c8ee14a70a5`. 
     - If you want to delete this post `1002` then use user_key instead post_key to delete the post. 
    
 2. If you pass, in correct user key in input body then it fails with 403 forbidden exception.
-<img src="screenshots/extension1_2.png" alt="your-image-description" style="border: 2px solid  black;">
+<img src="screenshots/extension1_2.png" alt="your-image-description" style="border: 2px solid  grey;">
 
      
 ### 3. User based range queries
@@ -174,11 +170,11 @@ Each extension is described as below:
      GET /post/user/{{user_id}}
      ```
     - It returns list of posts created by a user with user_id.
-  <img src="screenshots/extension3_1.png" alt="your-image-description" style="border: 2px solid  black;">
+  <img src="screenshots/extension3_1.png" alt="your-image-description" style="border: 2px solid  grey;">
     - If the user does not have posted anything then returns empty list.
-  <img src="screenshots/extension3_2.png" alt="your-image-description" style="border: 2px solid  black;">
+  <img src="screenshots/extension3_2.png" alt="your-image-description" style="border: 2px solid  grey;">
     - If the user does not exist, then it throws 404 not found exception.
-  <img src="screenshots/extension3_3.png" alt="your-image-description" style="border: 2px solid  black;">
+  <img src="screenshots/extension3_3.png" alt="your-image-description" style="border: 2px solid  grey;">
 
 
 ### 4. Time-based range queries 
