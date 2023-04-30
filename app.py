@@ -5,6 +5,7 @@ from threading import Lock
 import uuid
 from flask import Flask, jsonify, request
 from http import HTTPStatus
+import re
 
 app = Flask(__name__)
 lock_request = Lock()
@@ -12,6 +13,11 @@ lock_request = Lock()
 posts = {}
 n_bytes = 16
 users = {}
+
+
+def is_valid_username(username):
+    pattern = r"^[a-zA-Z0-9]{6,}$"
+    return bool(re.match(pattern, username))
 
 
 def generate_secured_key():
@@ -240,6 +246,11 @@ def handle_add_user():
             error = {'err': f'Bad request. user_id {user_id} is already taken. Please use another user_id'}
             return jsonify(error), HTTPStatus.BAD_REQUEST.value
 
+        if not is_valid_username(request.json.get('user_id')):
+            error = {'err': f'The username is not valid. A username should have least 6 character (digit/alphabets), '
+                            f'no spaces & special characters.'}
+            return jsonify(error), HTTPStatus.BAD_REQUEST.value
+
         user = create_user(request.json)
         return jsonify(user), HTTPStatus.OK.value
     else:
@@ -304,6 +315,8 @@ def handle_user_posts(user_id):
         error = {'err': f'user with id {user_id} is found.'}
         return jsonify(error), HTTPStatus.NOT_FOUND.value
     for post in posts:
-        if post.get('user_id') is not None and post.get('user_id') == user_id:
-            users_posts.append(post)
+        if posts[post].get('user_id') is not None and posts[post].get('user_id') == user_id:
+            curr_post = posts[post].copy()
+            del curr_post['key']
+            users_posts.append(curr_post)
     return users_posts, HTTPStatus.OK.value
