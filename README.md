@@ -135,16 +135,16 @@ Each extension is described as below:
      ```
   
     - Request body: it includes a json object having message, id and key of the user.
-    ```javascript
+     ```javascript
     {    
       "msg": "my name is vaishvik",
        "user_id": "vaishvik123",
        "user_key": "1a57d42eb71f5d000fca8c8ee14a70a5"
     }
     ```
-    - It adds new paramter to the post that is used_id which shows that the post is associated with the user.
+     - It adds new paramter to the post that is used_id which shows that the post is associated with the user.
     - Once, you hit request, and it matches requirements then it create a post and return a response as below:  
-    ```javascript
+     ```javascript
     {    
       "id": 1002,
       "key": "e63ad9abddfce35e53b57b5b72a2f699",
@@ -153,12 +153,12 @@ Each extension is described as below:
       "user_id": "vaishvik123"
     }
     ```
-    <img src="screenshots/extension1_1.png" alt="your-image-description" style="border: 2px solid  grey;">
+     <img src="screenshots/extension1_1.png" alt="your-image-description" style="border: 2px solid  grey;">
     - As we know that a user `vaishvik123` with key  `1a57d42eb71f5d000fca8c8ee14a70a5`. 
     - If you want to delete this post `1002` then use user_key instead post_key to delete the post. 
    
 2. If you pass, in correct user key in input body then it fails with 403 forbidden exception.
-<img src="screenshots/extension1_2.png" alt="your-image-description" style="border: 2px solid  grey;">
+    - <img src="screenshots/extension1_2.png" alt="your-image-description" style="border: 2px solid  grey;">
 
      
 ### 3. User based range queries
