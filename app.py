@@ -6,6 +6,7 @@ import uuid
 from flask import Flask, jsonify, request
 from http import HTTPStatus
 import re
+import time
 
 app = Flask(__name__)
 lock_request = Lock()
@@ -320,3 +321,48 @@ def handle_user_posts(user_id):
             del curr_post['key']
             users_posts.append(curr_post)
     return users_posts, HTTPStatus.OK.value
+
+
+@app.route('/post', methods=['GET'])
+def search_posts():
+    query = request.args.get('query')
+    if query is not None:
+        results = []
+        for post_id in posts:
+            post = posts[post_id]
+            if query.lower() in post['msg'].lower():
+                curr_post = {'id': post['id'], 'timestamp': post['timestamp'], 'msg': post['msg']}
+                results.append(curr_post)
+
+        return jsonify(results), HTTPStatus.OK.value
+
+    start_time = request.args.get('start_time')
+    end_time = request.args.get('end_time')
+
+    if start_time is None and end_time is None:
+        error = {'err': f'Bad Request. Please provide at least one parameter (start_time or end_time) or query.'}
+        return jsonify(error), HTTPStatus.BAD_REQUEST.value
+
+    if start_time is not None and end_time is not None and end_time < start_time:
+        error = {'err': f'Bad Request. end_time has to be greater than start_time. '}
+        return jsonify(error), HTTPStatus.BAD_REQUEST.value
+
+    filtered_posts = []
+    for post_id in posts:
+        post = posts[post_id]
+
+        post_time = post['timestamp']
+        if start_time and end_time:
+            if start_time <= post_time <= end_time:
+                curr_post = {'id': post['id'], 'timestamp': post['timestamp'], 'msg': post['msg']}
+                filtered_posts.append(curr_post)
+        elif start_time:
+            if post_time >= start_time:
+                curr_post = {'id': post['id'], 'timestamp': post['timestamp'], 'msg': post['msg']}
+                filtered_posts.append(curr_post)
+        elif end_time:
+            if post_time <= end_time:
+                curr_post = {'id': post['id'], 'timestamp': post['timestamp'], 'msg': post['msg']}
+                filtered_posts.append(curr_post)
+
+    return jsonify(filtered_posts), HTTPStatus.OK.value

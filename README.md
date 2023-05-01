@@ -186,27 +186,45 @@ Each extension is described as below:
 
 
 ## 4. Date- and Time-based range queries 
-- We have defined an API endpoint for searching posts based on a date/time range. The endpoint can accept two query parameters: start_time and end_time in the format of 'YYYY-MM-DD HH:MM:SS'. These parameters are used to filter the posts based on their timestamp.
-- The post data is defined as a list of dictionaries, with each dictionary representing a post. Each post has an id, message, timestamp, and user attribute.
-- The endpoint function search_posts is defined with the @app.route decorator. It checks whether the start_time and end_time parameters are present in the request query parameters. If neither of them is provided, it returns an error message with status code 400 (Bad Request).
-- The function iterates over each post in the posts list and checks if the post's timestamp falls within the specified date/time range. If it does, the post is added to the filtered_posts list.
-- Finally, the function returns the filtered_posts list in JSON format using Flask's jsonify() method.
+- This extension filters out the posts by the time. There are 2 query params have to passed which stands for start and end time of the interval.
 
-- To test it, you can send a GET request to http://127.0.0.1:5000/posts with the start_time and/or end_time parameters in the format of YYYY-MM-DD HH:MM:SS. For example:
+- There are 2 case:
+    1. If start_time is not specified, then it consider `January 1st, 1970 at 00:00:00 UTC` time.
+    2. If end_time is not specified, then it takes it as the current time.
+    3. If start and end time are not given, then throws 400 BAD Request error.
+    4. If start time is greater than end time, then throws 400 BAD Request error as there is no such interval exist.
+- Time format being used is: `ISO 8061 format` i.e.`2023-05-01T20:04:25.583859`.
 
-http://127.0.0.1:5000/posts?start_time=2022-05-02%2000:00:00 will return posts that were posted on or after May 2nd, 2022, 12:00 AM.
-http://127.0.0.1:5000/posts?end_time=2022-05-02%2023:59:59 will return posts that were posted on or before May 2nd, 2022, 11:59:59 PM.
-http://127.0.0.1:5000/posts?start_time=2022-05-01%2000:00:00&end_time=2022-05-03%2023:59:59 will return posts that were posted between May 1st, 2022, 12:00 AM and May 3rd, 2022, 11:59:59 PM.
+     ```http
+     GET /post?start_time={{x}}&end_time={{y}}
+     ```
+     - x and y are query parameters and in ISO 8061 time format. Either of one has to be passed.
+  
+- Examples: Consider different example and its output as per the aforementioned conditions.
+  <img src="screenshots/extension4_1.png">
+  <img src="screenshots/extension4_2.png">
+  <img src="screenshots/extension4_3.png">
+  <img src="screenshots/extension4_4.png">
+  <img src="screenshots/extension4_5.png">
 
 
 ## 5. Full text search
-- In this implementation, the /posts endpoint is created using the @app.route decorator. When a GET request is made to this endpoint, the search_posts() function is called. This function uses the request.args.get() method to retrieve the value of the q query parameter, which represents the search query. If no query is provided, the function returns an error response with status code 400.
-- If a search query is provided, the function loops through the posts list and checks if the query appears in the message of each post (ignoring case). If a post matches the query, it is added to a results list. Finally, the results list is returned in the response body as a JSON object with status code 200.
-- Note that in this implementation, the posts list is defined directly in the code rather than being loaded from a database.
+- In this extension, we simply filter out the text based on the input string.
+- This is more like a search filter which checks whether the input string is in a message or not. 
 
-- For example, if you want to search for posts containing the word "Flask", you can send a GET request to http://127.0.0.1:5000/posts?q=Flask.
+     ```http
+     GET /post?query={{query_message}}
+     ```
+     - query message is the input to be search. It returns list of posts which passed the filter `in` condition. 
+     - If the query input is empty then it returns all the available message in the system.
+- For example, if you want to search for posts containing the word "Flask", you can send a GET request to http://127.0.0.1:5000/posts?query=Flask.
 Verify that the response contains a JSON object with the post information matching the search query. If the search query is not found in any post messages, an empty list will be returned.
 
+- Examples: Consider the following examples for more context.
+  <img src="screenshots/extension5_1.png">
+  <img src="screenshots/extension5_2.png">
+  <img src="screenshots/extension5_3.png">
+  <img src="screenshots/extension5_4.png">
 ## 🏃‍Run Guide
 
 - Install python 3 in your machine
