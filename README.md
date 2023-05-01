@@ -90,9 +90,9 @@ Each extension is described as below:
      GET /user/{{user_id}}
      ```
     - Input is user_id which is the id of the user whose data needed to search.
-<img src="screenshots/extension2_3.png">
+     <img src="screenshots/extension2_3.png">
     - It you pass invalid user_id then it throws 404 not found error.
-<img src="screenshots/extension2_4.png">
+     <img src="screenshots/extension2_4.png">
 
 
 3. Update a user
@@ -120,10 +120,10 @@ Each extension is described as below:
    }
    ```
     -  Refer below screen shots for reference:
-<img src="screenshots/extension2_5.png">
+    <img src="screenshots/extension2_5.png">
 
     - It you pass invalid user_id then it throws 404 not found error.
-<img src="screenshots/extension2_6.png">
+    <img src="screenshots/extension2_6.png">
 
 
 ## 2. User and User keys
