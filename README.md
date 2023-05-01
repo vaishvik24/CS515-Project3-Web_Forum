@@ -36,7 +36,7 @@
 
 ## 🧩 Extensions:
 We've implemented 5 extensions. 
-Postman collection Link: https://api.postman.com/collections/3753695-16d75404-5cc2-43f1-b13f-cbdd160c4fb0?access_key=PMAT-01GZA2XQG0D8N98N798EKCT46X
+### Postman collection Link: https://api.postman.com/collections/3753695-16d75404-5cc2-43f1-b13f-cbdd160c4fb0?access_key=PMAT-01GZA2XQG0D8N98N798EKCT46X
 
 Each extension is described as below:
 ## 1. User Profiles (CURD operations)
