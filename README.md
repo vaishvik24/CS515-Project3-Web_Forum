@@ -198,6 +198,7 @@ http://127.0.0.1:5000/posts?start_time=2022-05-02%2000:00:00 will return posts t
 http://127.0.0.1:5000/posts?end_time=2022-05-02%2023:59:59 will return posts that were posted on or before May 2nd, 2022, 11:59:59 PM.
 http://127.0.0.1:5000/posts?start_time=2022-05-01%2000:00:00&end_time=2022-05-03%2023:59:59 will return posts that were posted between May 1st, 2022, 12:00 AM and May 3rd, 2022, 11:59:59 PM.
 
+
 ## 5. Full text search
 - In this implementation, the /posts endpoint is created using the @app.route decorator. When a GET request is made to this endpoint, the search_posts() function is called. This function uses the request.args.get() method to retrieve the value of the q query parameter, which represents the search query. If no query is provided, the function returns an error response with status code 400.
 - If a search query is provided, the function loops through the posts list and checks if the query appears in the message of each post (ignoring case). If a post matches the query, it is added to a results list. Finally, the results list is returned in the response body as a JSON object with status code 200.
