@@ -185,8 +185,26 @@ Each extension is described as below:
   <img src="screenshots/extension3_3.png">
 
 
-## 4. Time-based range queries 
+## 4. Date- and Time-based range queries 
+- We have defined an API endpoint for searching posts based on a date/time range. The endpoint can accept two query parameters: start_time and end_time in the format of 'YYYY-MM-DD HH:MM:SS'. These parameters are used to filter the posts based on their timestamp.
+- The post data is defined as a list of dictionaries, with each dictionary representing a post. Each post has an id, message, timestamp, and user attribute.
+- The endpoint function search_posts is defined with the @app.route decorator. It checks whether the start_time and end_time parameters are present in the request query parameters. If neither of them is provided, it returns an error message with status code 400 (Bad Request).
+- The function iterates over each post in the posts list and checks if the post's timestamp falls within the specified date/time range. If it does, the post is added to the filtered_posts list.
+- Finally, the function returns the filtered_posts list in JSON format using Flask's jsonify() method.
+
+- To test it, you can send a GET request to http://127.0.0.1:5000/posts with the start_time and/or end_time parameters in the format of YYYY-MM-DD HH:MM:SS. For example:
+
+http://127.0.0.1:5000/posts?start_time=2022-05-02%2000:00:00 will return posts that were posted on or after May 2nd, 2022, 12:00 AM.
+http://127.0.0.1:5000/posts?end_time=2022-05-02%2023:59:59 will return posts that were posted on or before May 2nd, 2022, 11:59:59 PM.
+http://127.0.0.1:5000/posts?start_time=2022-05-01%2000:00:00&end_time=2022-05-03%2023:59:59 will return posts that were posted between May 1st, 2022, 12:00 AM and May 3rd, 2022, 11:59:59 PM.
+
 ## 5. Full text search
+- In this implementation, the /posts endpoint is created using the @app.route decorator. When a GET request is made to this endpoint, the search_posts() function is called. This function uses the request.args.get() method to retrieve the value of the q query parameter, which represents the search query. If no query is provided, the function returns an error response with status code 400.
+- If a search query is provided, the function loops through the posts list and checks if the query appears in the message of each post (ignoring case). If a post matches the query, it is added to a results list. Finally, the results list is returned in the response body as a JSON object with status code 200.
+- Note that in this implementation, the posts list is defined directly in the code rather than being loaded from a database.
+
+- For example, if you want to search for posts containing the word "Flask", you can send a GET request to http://127.0.0.1:5000/posts?q=Flask.
+Verify that the response contains a JSON object with the post information matching the search query. If the search query is not found in any post messages, an empty list will be returned.
 
 ## 🏃‍Run Guide
 
