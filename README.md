@@ -136,7 +136,7 @@ Each extension is described as below:
    - Consider the base_url: http://127.0.0.1:5000/
    - Create Post for a user: 
      ```http
-     GET /post
+     POST /post
      ```
   
     - Request body: it includes a json object having message, id and key of the user.

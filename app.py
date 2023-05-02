@@ -268,7 +268,7 @@ def handle_update_user(user_id):
     :return: updates metadata of the given user
     """
     if user_id not in users:
-        error = {'err': f'user with id {user_id} is found.'}
+        error = {'err': f'user with id {user_id} is not found.'}
         return jsonify(error), HTTPStatus.NOT_FOUND.value
     curr_user = update_user(request.json, user_id)
     return jsonify(curr_user), HTTPStatus.OK.value
@@ -299,7 +299,7 @@ def handle_get_user(user_id):
     :return: returns user for given query param user_id
     """
     if user_id not in users:
-        error = {'err': f'user with id {user_id} is found.'}
+        error = {'err': f'user with id {user_id} is not found.'}
         return jsonify(error), HTTPStatus.NOT_FOUND.value
     curr_user = get_user(user_id)
     return jsonify(curr_user), HTTPStatus.OK.value
@@ -313,7 +313,7 @@ def handle_user_posts(user_id):
     """
     users_posts = []
     if user_id not in users:
-        error = {'err': f'user with id {user_id} is found.'}
+        error = {'err': f'user with id {user_id} is not found.'}
         return jsonify(error), HTTPStatus.NOT_FOUND.value
     for post in posts:
         if posts[post].get('user_id') is not None and posts[post].get('user_id') == user_id:
