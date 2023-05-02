@@ -144,3 +144,177 @@ def get_post_files(post_id):
             file_content = f.read()
         file_data.append({'filename': filename, 'content': base64.b64encode(file_content).decode('utf-8')})
     return jsonify(file_data), HTTPStatus.OK
+
+
+# Moderator role
+lock_request = Lock()
+
+posts = {}
+n_bytes = 16
+users = {}
+moderator_keys = set()  # store moderator keys
+
+
+def is_valid_username(username):
+    pattern = r"^[a-zA-Z0-9]{6,}$"
+    return bool(re.match(pattern, username))
+
+
+def generate_secured_key():
+    """Generate a random, unique key for a post"""
+    keys = [posts[p]['key'] for p in posts]
+    while 1 == 1:
+        key = secrets.token_hex(n_bytes)
+        if key not in keys:
+            return key
+
+
+def generate_secured_user_key():
+    """Generate a random, unique key for a user"""
+    while 1 == 1:
+        key = secrets.token_hex(n_bytes)
+        user_keys = [users[u]['key'] for u in users]
+        if key not in user_keys:
+            return key
+
+
+def is_valid_user_key(user_id, user_key):
+    curr_user = users[user_id]
+    if curr_user is not None:
+        return curr_user['key'] == user_key
+    return False
+
+
+def create_post(msg, user_id):
+    """Create a new post with the given message"""
+    with lock_request:
+        curr_post_id = len(posts) + 1000
+        curr_post = {
+            'id': curr_post_id,
+            'key': generate_secured_key(),
+            'timestamp': datetime.utcnow().isoformat(),
+            'msg': msg
+        }
+
+        if user_id is not None:
+            curr_post['user_id'] = user_id
+            # curr_post['user_key'] = user_key
+        posts[curr_post_id] = curr_post
+        return curr_post
+
+
+def create_user(user_json):
+    """
+    Create a user from input json body
+    metadata: unique user_id, name, phone_num, city
+    user object: user_id, name, phone_num, city, created_at, user_key
+    :param user_json: user json
+    :return: newly created user
+    """
+    with lock_request:
+        default_unique_user_key = generate_secured_user_key()
+        curr_user = {
+            'user_id': user_json.get('user_id'),
+            'key': default_unique_user_key,
+            'created_at': datetime.utcnow().isoformat()
+        }
+        if user_json.get('name') is not None:
+            curr_user['name'] = user_json.get('name')
+        if user_json.get('phone_num') is not None:
+            curr_user['phone_num'] = user_json.get('phone_num')
+        if user_json.get('city') is not None:
+            curr_user['city'] = user_json.get('city')
+        users[user_json.get('user_id')] = curr_user
+        return curr_user
+
+
+def update_user(user_json, user_id):
+    with lock_request:
+        curr_user = users.get(user_id)
+        if user_json.get('name') is not None:
+            curr_user['name'] = user_json.get('name')
+        if user_json.get('phone_num') is not None:
+            curr_user['phone_num'] = user_json.get('phone_num')
+        if user_json.get('city') is not None:
+            curr_user['city'] = user_json.get('city')
+        users[user_id] = curr_user
+        user_ret = curr_user.copy()
+        del user_ret['key']
+        return user_ret
+
+
+def get_user(user_id):
+    with lock_request:
+        curr_user = users.get(user_id)
+        if curr_user is not None:
+            user_ret = curr_user.copy()
+            del user_ret['key']
+            return user_ret
+        return None
+
+
+def authenticate_moderator(key):
+    return key in moderator_keys
+
+
+@app.route('/posts', methods=['POST'])
+def create_new_post():
+    data = request.get_json()
+    msg = data.get('msg')
+    user_id = data.get('user_id')
+    user_key = data.get('user_key')
+    if user_id is not None and user_key is not None and is_valid_user_key(user_id, user_key):
+        post = create_post(msg, user_id)
+        return jsonify(post), HTTPStatus.CREATED
+    else:
+        return jsonify({'message': 'Invalid user credentials'}), HTTPStatus.UNAUTHORIZED
+
+
+@app.route('/posts/int:post_id', methods=['GET'])
+def get_post(post_id):
+    post = posts.get(post_id)
+    if post is not None:
+        return jsonify(post), HTTPStatus.OK
+    else:
+        return jsonify({'message': 'Post not found'}), HTTPStatus.NOT_FOUND
+
+
+@app.route('/users', methods=['POST'])
+def create_user_route():
+    data = request.get_json()
+    user = create_user(data)
+    return jsonify(user), HTTPStatus.CREATED
+
+
+@app.route('/users/string:user_id', methods=['PUT'])
+def update_user_route(user_id):
+    data = request.get_json()
+    if is_valid_username(user_id):
+        user = update_user(data, user_id)
+        return jsonify(user), HTTPStatus.OK
+    else:
+        return jsonify({'message': 'Invalid username format'}), HTTPStatus.BAD_REQUEST
+
+
+@app.route('/users/string:user_id', methods=['GET'])
+def get_user_route(user_id):
+    user = get_user(user_id)
+    if user is not None:
+        return jsonify(user), HTTPStatus.OK
+    else:
+        return jsonify({'message': 'User not found'}), HTTPStatus.NOT_FOUND
+
+
+@app.route('/moderator/authenticate', methods=['POST'])
+def authenticate_moderator_route():
+    data = request.get_json()
+    key = data.get('key')
+    if authenticate_moderator(key):
+        moderator_keys.add(key)
+        return jsonify({'message': 'Moderator authenticated'}), HTTPStatus.OK
+    else:
+        return jsonify({'message': 'Invalid moderator key'}), HTTPStatus.UNAUTHORIZED
+
+
+if __name__ == 'main':
+    app.run(debug=True)
