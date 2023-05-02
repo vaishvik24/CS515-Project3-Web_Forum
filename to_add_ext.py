@@ -57,10 +57,6 @@ if __name__ == '__main__':
 
 
 
-
-
-
-
 #FULL TEXT SEARCH
 
 # Endpoint for searching posts by a text
@@ -79,3 +75,72 @@ def search_posts_text():
 
 if __name__ == '__main__':
     app.run()
+
+
+# File upload
+app.config['UPLOAD_FOLDER'] = os.getcwd() + '/uploads'
+app.config['ALLOWED_EXTENSIONS'] = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+        filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+
+def save_file(file):
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        return filename
+
+
+@app.route('/api/posts/<post_id>/files', methods=['POST'])
+def create_post_files(post_id):
+    if post_id not in posts:
+        return jsonify({'error': 'Post does not exist'}), HTTPStatus.BAD_REQUEST
+
+    files = request.files.getlist('files')
+
+    if len(files) == 0 and 'files' not in request.json:
+        return jsonify({'error': 'Files not found'}), HTTPStatus.BAD_REQUEST
+
+    if 'files' in request.json:
+        if not isinstance(request.json['files'], list):
+            return jsonify({'error': 'Invalid files payload'}), HTTPStatus.BAD_REQUEST
+        file_contents = request.json['files']
+        filenames = [f"{post_id}_{str(uuid.uuid4())}.{f.get('extension')}" for f in file_contents]
+        for i, content in enumerate(file_contents):
+            if 'content' not in content:
+                return jsonify({'error': f'Content missing for file {i + 1}'}), HTTPStatus.BAD_REQUEST
+            file_data = base64.b64decode(content['content'])
+            with open(os.path.join(app.config['UPLOAD_FOLDER'], filenames[i]), 'wb') as f:
+                f.write(file_data)
+    else:
+        filenames = [save_file(f) for f in files]
+
+    if None in filenames:
+        return jsonify({'error': 'Invalid file type'}), HTTPStatus.BAD_REQUEST
+
+    posts[post_id]['files'] = filenames
+    return jsonify({'message': 'Files uploaded successfully'}), HTTPStatus.OK
+
+
+@app.route('/api/posts/<post_id>/files', methods=['GET'])
+def get_post_files(post_id):
+    if post_id not in posts:
+        return jsonify({'error': 'Post does not exist'}), HTTPStatus.BAD_REQUEST
+
+    if 'files' not in posts[post_id]:
+        return jsonify({'error': 'Files not found for the post'}), HTTPStatus.NOT_FOUND
+
+    file_info = [{'filename': filename} for filename in posts[post_id]['files']]
+
+    if 'metadata' in request.args:
+        return jsonify(file_info), HTTPStatus.OK
+
+    file_data = []
+    for filename in posts[post_id]['files']:
+        with open(os.path.join(app.config['UPLOAD_FOLDER'], filename), 'rb') as f:
+            file_content = f.read()
+        file_data.append({'filename': filename, 'content': base64.b64encode(file_content).decode('utf-8')})
+    return jsonify(file_data), HTTPStatus.OK
